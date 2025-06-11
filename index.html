@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Categorization Task</title>
   <!-- PsychoJS libraries -->
-  <script src="https://lib.pavlovia.org/core-2021.2.js"></script>
-  <script src="https://lib.pavlovia.org/util-2021.2.js"></script>
-  <script src="https://lib.pavlovia.org/data-2021.2.js"></script>
-  <script src="https://lib.pavlovia.org/visual-2021.2.js"></script>
-  <script src="https://lib.pavlovia.org/sound-2021.2.js"></script>
+  <script src="https://pavlovia.org/lib/core-2021.2.js"></script>
+  <script src="https://pavlovia.org/lib/util-2021.2.js"></script>
+  <script src="https://pavlovia.org/lib/data-2021.2.js"></script>
+  <script src="https://pavlovia.org/lib/visual-2021.2.js"></script>
+  <script src="https://pavlovia.org/lib/sound-2021.2.js"></script>
 
   <script>
     // === Initialize PsychoJS ===
@@ -124,6 +124,14 @@
           const result = await runTrial(isSquare, withNoise);
           if (result.correct) correctCount++;
           data.push({ phase, stimulus: isSquare ? 'square' : 'circle', correct: result.correct, rt: result.rt, withNoise });
+
+          // Save trial data
+          psychoJS.experiment.addData('phase', phase);
+          psychoJS.experiment.addData('stimulus', isSquare ? 'square' : 'circle');
+          psychoJS.experiment.addData('correct_key', isSquare ? 'z' : 'm');
+          psychoJS.experiment.addData('response', result.correct);
+          psychoJS.experiment.addData('reaction_time', result.rt);
+          psychoJS.experiment.addData('with_noise', withNoise);
       }
       return { accuracy: correctCount / nTrials, data };
     }
