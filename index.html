@@ -4,17 +4,23 @@
   <meta charset="UTF-8">
   <title>Categorization Task</title>
   <!-- PsychoJS libraries -->
-  <script src="https://pavlovia.org/assets/lib/core.js"></script>
-  <script src="https://pavlovia.org/assets/lib/util.js"></script>
-  <script src="https://pavlovia.org/assets/lib/data.js"></script>
-  <script src="https://pavlovia.org/assets/lib/visual.js"></script>
-  <script src="https://pavlovia.org/assets/lib/sound.js"></script>
+  <script src="https://lib.pavlovia.org/core-2021.2.js"></script>
+  <script src="https://lib.pavlovia.org/util-2021.2.js"></script>
+  <script src="https://lib.pavlovia.org/data-2021.2.js"></script>
+  <script src="https://lib.pavlovia.org/visual-2021.2.js"></script>
+  <script src="https://lib.pavlovia.org/sound-2021.2.js"></script>
+
   <script>
     // === Initialize PsychoJS ===
     const psychoJS = new PsychoJS({ debug: true });
 
-    // Experiment info dialog
-    psychoJS.start({ expName: 'Categorization_Task', expInfo: { participant: '', session: '001' } });
+    psychoJS.start({
+      expName: 'Categorization_Task',
+      expInfo: { participant: '', session: '001' },
+      resources: [
+        { name: 'white_noise.wav', path: 'white_noise.wav' }
+      ]
+    });
 
     // === Global variables and clocks ===
     let win;
@@ -75,14 +81,14 @@
     async function showInstructions() {
       instructions.draw();
       await win.flip();
-      await core.Keyboard.getKeys({ keyList: ['space'] });
+      await psychoJS.eventManager.waitKeys({ keyList: ['space'] });
     }
 
     async function runTrial(isSquare, withNoise = false) {
-      event.clearEvents();
+      psychoJS.eventManager.clearEvents();
       fixation.draw();
       await win.flip();
-      await core.wait(0.5);
+      await psychoJS.clock.wait(0.5);
 
       if (withNoise) noise.play();
 
@@ -90,21 +96,21 @@
       await win.flip();
 
       trialClock.reset();
-      const keys = await core.Keyboard.getKeys({ maxWait: 2.0, keyList: ['z','m','escape'], timeStamped: trialClock });
+      const keys = await psychoJS.eventManager.waitKeys({ maxWait: 2.0, keyList: ['z', 'm', 'escape'] });
       let response = null, rt = null, correct = false;
       if (keys.length) {
-        const key = keys[0].key;
-        rt = keys[0].rt;
-        if (key === 'escape') psychoJS.quit();
-        response = key;
-        correct = (isSquare && key === 'z') || (!isSquare && key === 'm');
+          const key = keys[0].name;
+          rt = keys[0].rt;
+          if (key === 'escape') psychoJS.quit();
+          response = key;
+          correct = (isSquare && key === 'z') || (!isSquare && key === 'm');
       }
 
       feedback.text = correct ? 'Correct!' : 'Incorrect!';
       feedback.color = correct ? new util.Color('green') : new util.Color('red');
       feedback.draw();
       await win.flip();
-      await core.wait(1.0);
+      await psychoJS.clock.wait(1.0);
 
       return { correct, rt };
     }
@@ -113,11 +119,11 @@
       let correctCount = 0;
       const data = [];
       for (let i = 0; i < nTrials; i++) {
-        const isSquare = Math.random() < 0.5;
-        const withNoise = (phase === 'testing') && (Math.random() < 0.5);
-        const result = await runTrial(isSquare, withNoise);
-        if (result.correct) correctCount++;
-        data.push({ phase, stimulus: isSquare?'square':'circle', correct: result.correct, rt: result.rt, withNoise });
+          const isSquare = Math.random() < 0.5;
+          const withNoise = (phase === 'testing') && (Math.random() < 0.5);
+          const result = await runTrial(isSquare, withNoise);
+          if (result.correct) correctCount++;
+          data.push({ phase, stimulus: isSquare ? 'square' : 'circle', correct: result.correct, rt: result.rt, withNoise });
       }
       return { accuracy: correctCount / nTrials, data };
     }
@@ -125,27 +131,29 @@
     async function runTraining() {
       let acc;
       do {
-        const result = await runBlock(10, 'training');
-        acc = result.accuracy;
-        trainingData = trainingData.concat(result.data);
-        if (acc < 0.7) {
-          feedback.text = 'Training failed. Try again.';
-          feedback.color = new util.Color('red');
-          feedback.draw();
-          await win.flip();
-          await core.wait(2.0);
-        }
+          const result = await runBlock(10, 'training');
+          acc = result.accuracy;
+          trainingData = trainingData.concat(result.data);
+          if (acc < 0.7) {
+              feedback.text = 'Training failed. Try again.';
+              feedback.color = new util.Color('red');
+              feedback.draw();
+              await win.flip();
+              await psychoJS.clock.wait(2.0);
+          }
       } while (acc < 0.7);
     }
 
     async function showTestingInstructions() {
-      testingInstructions = new visual.TextStim({ win, text: 
-        "Great job! Now the same task but with noise sometimes.\n\nPress SPACE to continue.",
-        height: 0.05, color: new util.Color('white')
+      const testingInstructions = new visual.TextStim({
+          win,
+          text: "Great job! Now the same task but with noise sometimes.\n\nPress SPACE to continue.",
+          height: 0.05,
+          color: new util.Color('white')
       });
       testingInstructions.draw();
       await win.flip();
-      await core.Keyboard.getKeys({ keyList: ['space'] });
+      await psychoJS.eventManager.waitKeys({ keyList: ['space'] });
     }
 
     async function runTesting() {
