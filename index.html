@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Categorization Task</title>
+  <!-- PsychoJS libraries -->
+  <script src="https://pavlovia.org/assets/lib/core.js"></script>
+  <script src="https://pavlovia.org/assets/lib/util.js"></script>
+  <script src="https://pavlovia.org/assets/lib/data.js"></script>
+  <script src="https://pavlovia.org/assets/lib/visual.js"></script>
+  <script src="https://pavlovia.org/assets/lib/sound.js"></script>
+  <script>
+    // === Initialize PsychoJS ===
+    const psychoJS = new PsychoJS({ debug: true });
+
+    // Experiment info dialog
+    psychoJS.start({ expName: 'Categorization_Task', expInfo: { participant: '', session: '001' } });
+
+    // === Global variables and clocks ===
+    let win;
+    let experiment;
+    let globalClock;
+    let trialClock;
+
+    // Stimuli
+    let instructions, feedback, square, circle, fixation, noise;
+    let trainingData = [];
+    let testingData = [];
+
+    // === Functions ===
+    async function initExperiment() {
+      // Create window
+      win = new Window({ fullscr: true, color: new util.Color('black'), units: 'height' });
+
+      globalClock = new util.Clock();
+      trialClock = new util.Clock();
+
+      // Instructions text
+      instructions = new visual.TextStim({ win, text: 
+        "Categorization Task\n\nPress 'Z' for square, 'M' for circle.\n" +
+        "Be quick and accurate.\n\nPress SPACE to begin.",
+        height: 0.05, color: new util.Color('white')
+      });
+
+      // Feedback
+      feedback = new visual.TextStim({ win, text: '', height: 0.05, color: new util.Color('white') });
+
+      // Stimuli shapes
+      square = new visual.Rect({ win, width: 0.2, height: 0.2, fillColor: new util.Color('white') });
+      circle = new visual.Circle({ win, radius: 0.1, fillColor: new util.Color('white') });
+
+      // Fixation
+      fixation = new visual.TextStim({ win, text: '+', height: 0.1, color: new util.Color('white') });
+
+      // Load white noise (upload white_noise.wav in your experiment resources)
+      noise = new sound.Sound({ win, value: 'white_noise.wav', secs: 0.5 });
+
+      // Start the experiment flow
+      await showInstructions();
+      await runTraining();
+      await showTestingInstructions();
+      await runTesting();
+
+      // Thank you screen
+      feedback.text = 'Experiment completed. Thank you!';
+      feedback.color = new util.Color('white');
+      feedback.draw();
+      await win.flip();
+      await core.Keyboard.getKeys({ keyList: ['space'] });
+
+      psychoJS.experiment.save({ fileName: `${psychoJS.experiment.expInfo['participant']}_data` });
+      psychoJS.quit();
+    }
+
+    async function showInstructions() {
+      instructions.draw();
+      await win.flip();
+      await core.Keyboard.getKeys({ keyList: ['space'] });
+    }
+
+    async function runTrial(isSquare, withNoise = false) {
+      event.clearEvents();
+      fixation.draw();
+      await win.flip();
+      await core.wait(0.5);
+
+      if (withNoise) noise.play();
+
+      if (isSquare) square.draw(); else circle.draw();
+      await win.flip();
+
+      trialClock.reset();
+      const keys = await core.Keyboard.getKeys({ maxWait: 2.0, keyList: ['z','m','escape'], timeStamped: trialClock });
+      let response = null, rt = null, correct = false;
+      if (keys.length) {
+        const key = keys[0].key;
+        rt = keys[0].rt;
+        if (key === 'escape') psychoJS.quit();
+        response = key;
+        correct = (isSquare && key === 'z') || (!isSquare && key === 'm');
+      }
+
+      feedback.text = correct ? 'Correct!' : 'Incorrect!';
+      feedback.color = correct ? new util.Color('green') : new util.Color('red');
+      feedback.draw();
+      await win.flip();
+      await core.wait(1.0);
+
+      return { correct, rt };
+    }
+
+    async function runBlock(nTrials, phase) {
+      let correctCount = 0;
+      const data = [];
+      for (let i = 0; i < nTrials; i++) {
+        const isSquare = Math.random() < 0.5;
+        const withNoise = (phase === 'testing') && (Math.random() < 0.5);
+        const result = await runTrial(isSquare, withNoise);
+        if (result.correct) correctCount++;
+        data.push({ phase, stimulus: isSquare?'square':'circle', correct: result.correct, rt: result.rt, withNoise });
+      }
+      return { accuracy: correctCount / nTrials, data };
+    }
+
+    async function runTraining() {
+      let acc;
+      do {
+        const result = await runBlock(10, 'training');
+        acc = result.accuracy;
+        trainingData = trainingData.concat(result.data);
+        if (acc < 0.7) {
+          feedback.text = 'Training failed. Try again.';
+          feedback.color = new util.Color('red');
+          feedback.draw();
+          await win.flip();
+          await core.wait(2.0);
+        }
+      } while (acc < 0.7);
+    }
+
+    async function showTestingInstructions() {
+      testingInstructions = new visual.TextStim({ win, text: 
+        "Great job! Now the same task but with noise sometimes.\n\nPress SPACE to continue.",
+        height: 0.05, color: new util.Color('white')
+      });
+      testingInstructions.draw();
+      await win.flip();
+      await core.Keyboard.getKeys({ keyList: ['space'] });
+    }
+
+    async function runTesting() {
+      const result = await runBlock(80, 'testing');
+      testingData = testingData.concat(result.data);
+    }
+
+    // Start once all resources are loaded
+    psychoJS.schedule(function() { initExperiment(); });
+  </script>
+</head>
+<body></body>
+</html>
