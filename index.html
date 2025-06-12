@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Categorization Task</title>
+  <script src="./lib/easeljs.min.js"></script>
 </head>
 <body>
 <script type="module">
-  import * as createjs from './lib/easeljs.min.js';
   import { core, data, sound, util, visual, hardware } from './lib/psychojs-2024.2.4.js';
 
   const { PsychoJS } = core;
@@ -17,7 +17,7 @@
   const { round } = util;
 
   // Ensure createjs is available before initializing PsychoJS
-  if (!createjs) {
+  if (typeof createjs === 'undefined') {
     console.error('CreateJS library failed to load.');
   }
 
