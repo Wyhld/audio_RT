@@ -4,17 +4,6 @@
 // === GLOBAL SETUP ===
 // Wait for PsychoJS to load
 window.onload = function() {
-  // Access PsychoJS components from the global scope
-  const { TrialHandler, MultiStairHandler } = psychoJS.data;
-  const { Scheduler } = psychoJS.util;
-  const { Window, TextStim, Rect, Circle } = psychoJS.visual;
-  const { Sound } = psychoJS.sound;
-  const { Clock } = psychoJS.util;
-  const { Color } = psychoJS.util;
-
-  // Some handy aliases as in the psychopy scripts
-  const { abs, sin, cos, PI: pi, sqrt } = Math;
-
   // Correct initialization of PsychoJS
   const { PsychoJS } = core;
   const psychojs = new PsychoJS({ debug: true });
@@ -25,6 +14,17 @@ window.onload = function() {
   // Stimuli
   let instructions, feedback, square, circle, fixation, noise;
   let trainingData = [], testingData = [];
+
+  // Access PsychoJS components from the global scope
+  const { TrialHandler, MultiStairHandler } = psychojs.data;
+  const { Scheduler } = psychoJS.util;
+  const { Window, TextStim, Rect, Circle } = psychoJS.visual;
+  const { Sound } = psychoJS.sound;
+  const { Clock } = psychoJS.util;
+  const { Color } = psychoJS.util;
+
+  // Some handy aliases as in the psychopy scripts
+  const { abs, sin, cos, PI: pi, sqrt } = Math;
 
   // === EXPERIMENT LOGIC ===
   async function initExperiment() {
