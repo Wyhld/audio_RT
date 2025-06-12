@@ -16,6 +16,7 @@ window.onload = function() {
   // Some handy aliases as in the psychopy scripts
   const { abs, sin, cos, PI: pi, sqrt } = Math;
 
+  // Initialize PsychoJS
   const psychojs = new PsychoJS({ debug: true });
 
   // Clocks & window
