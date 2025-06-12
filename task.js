@@ -1,27 +1,29 @@
 // PsychoJS Categorization Task
 // JavaScript implementation for Pavlovia
 
+// Import PsychoJS modules
+import { core, data, sound, util, visual, hardware } from './lib/psychojs-2024.2.4.js';
+
+// Correct initialization of PsychoJS
+const { PsychoJS } = core;
+const psychojs = new PsychoJS({ debug: true });
+
+// Access PsychoJS components
+const { TrialHandler, MultiStairHandler } = data;
+const { Scheduler } = util;
+const { Window, TextStim, Rect, Circle } = visual;
+const { Sound } = sound;
+const { Clock, Color } = util;
+
 // === GLOBAL SETUP ===
 // Wait for PsychoJS to load
 window.onload = function() {
-  // Correct initialization of PsychoJS
-  const { PsychoJS } = core;
-  const psychojs = new PsychoJS({ debug: true });
-
   // Clocks & window
   let win, globalClock, trialClock;
 
   // Stimuli
   let instructions, feedback, square, circle, fixation, noise;
   let trainingData = [], testingData = [];
-
-  // Access PsychoJS components from the global scope
-  const { TrialHandler, MultiStairHandler } = psychojs.data;
-  const { Scheduler } = psychoJS.util;
-  const { Window, TextStim, Rect, Circle } = psychoJS.visual;
-  const { Sound } = psychoJS.sound;
-  const { Clock } = psychoJS.util;
-  const { Color } = psychoJS.util;
 
   // Some handy aliases as in the psychopy scripts
   const { abs, sin, cos, PI: pi, sqrt } = Math;
