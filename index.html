@@ -11,6 +11,7 @@
   <script src="https://lib.pavlovia.org/sound.js" type="module"></script>
 
   <script>
+  window.onload = function() {
     // === Initialize PsychoJS ===
     const psychoJS = new PsychoJS({ debug: true });
 
@@ -171,6 +172,7 @@
 
     // Start once all resources are loaded
     psychoJS.schedule(function() { initExperiment(); });
+  };
   </script>
 </head>
 <body></body>
