@@ -16,17 +16,12 @@
 </head>
 <body>
 <script>
-
   const { PsychoJS } = core;
   const { TrialHandler, MultiStairHandler } = data;
   const { Scheduler } = util;
   // some handy aliases as in the psychopy scripts
   const { abs, sin, cos, PI: pi, sqrt } = Math;
   const { round } = util;
-  // Ensure createjs is available before initializing PsychoJS
-  if (typeof createjs === 'undefined') {
-    console.error('CreateJS library failed to load.');
-  }
 
   // === GLOBAL SETUP ===
   const psychoJS = new PsychoJS({ debug: true });
