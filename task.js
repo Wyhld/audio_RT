@@ -5,7 +5,6 @@
 // Wait for PsychoJS to load
 window.onload = function() {
   // Access PsychoJS components from the global scope
-  const { PsychoJS } = psychoJS;
   const { TrialHandler, MultiStairHandler } = psychoJS.data;
   const { Scheduler } = psychoJS.util;
   const { Window, TextStim, Rect, Circle } = psychoJS.visual;
@@ -16,7 +15,8 @@ window.onload = function() {
   // Some handy aliases as in the psychopy scripts
   const { abs, sin, cos, PI: pi, sqrt } = Math;
 
-  // Initialize PsychoJS
+  // Correct initialization of PsychoJS
+  const { PsychoJS } = core;
   const psychojs = new PsychoJS({ debug: true });
 
   // Clocks & window
