@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Categorization Task</title>
-
-  <!-- 1) PsychoJS runtime (defines global PsychoJS) -->
-  <script src="https://pavlovia.org/assets/lib/psychojs.js"></script>
-  <!-- 2) Helper libraries -->
-  <script src="https://pavlovia.org/assets/lib/core.js"></script>
-  <script src="https://pavlovia.org/assets/lib/util.js"></script>
-  <script src="https://pavlovia.org/assets/lib/data.js"></script>
-  <script src="https://pavlovia.org/assets/lib/visual.js"></script>
-  <script src="https://pavlovia.org/assets/lib/sound.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+  import { core, data, sound, util, visual, hardware } from './lib/psychojs-2024.2.4.js';
+  const { PsychoJS } = core;
+  const { TrialHandler, MultiStairHandler } = data;
+  const { Scheduler } = util;
+  // some handy aliases as in the psychopy scripts
+  const { abs, sin, cos, PI: pi, sqrt } = Math;
+  const { round } = util;
+
   // === GLOBAL SETUP ===
   const psychoJS = new PsychoJS({ debug: true });
 
@@ -28,7 +27,7 @@
   // === YOUR EXPERIMENT LOGIC ===
   async function initExperiment() {
     // Create window
-    win = new Window({
+    win = new visual.Window({
       fullscr: true,
       color: new util.Color('black'),
       units: 'height'
