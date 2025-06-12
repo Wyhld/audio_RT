@@ -3,11 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Categorization Task</title>
-  <script src="./lib/easeljs.min.js"></script>
+  <script src="https://pavlovia.org/assets/lib/vendors/jquery-2.2.0.min.js"></script>
+  <script src="https://pavlovia.org/assets/lib/vendors/pixi-4.8.8.min.js"></script>
+  <script src="https://pavlovia.org/assets/lib/vendors/p5-1.0.0.min.js"></script>
+  <script src="https://pavlovia.org/assets/lib/vendors/ease-2.0.2.min.js"></script>
+  <script src="https://pavlovia.org/assets/lib/vendors/sound-3.1.3.min.js"></script>
+  <script src="https://pavlovia.org/assets/lib/core-2024.2.4.js"></script>
+  <script src="https://pavlovia.org/assets/lib/data-2024.2.4.js"></script>
+  <script src="https://pavlovia.org/assets/lib/util-2024.2.4.js"></script>
+  <script src="https://pavlovia.org/assets/lib/visual-2024.2.4.js"></script>
+  <script src="https://pavlovia.org/assets/lib/sound-2024.2.4.js"></script>
 </head>
 <body>
-<script type="module">
-  import { core, data, sound, util, visual, hardware } from './lib/psychojs-2024.2.4.js';
+<script>
 
   const { PsychoJS } = core;
   const { TrialHandler, MultiStairHandler } = data;
@@ -15,7 +23,6 @@
   // some handy aliases as in the psychopy scripts
   const { abs, sin, cos, PI: pi, sqrt } = Math;
   const { round } = util;
-
   // Ensure createjs is available before initializing PsychoJS
   if (typeof createjs === 'undefined') {
     console.error('CreateJS library failed to load.');
@@ -88,11 +95,10 @@
     await showTestingInstructions();
     await runTesting();
   }
-
   async function showInstructions() {
     instructions.draw();
     await win.flip();
-    await core.Keyboard.getKeys({ keyList: ['space'] });
+    await psychoJS.eventManager.getKeys({ keyList: ['space'] });
   }
 
   async function runTrial(isSquare, withNoise = false) {
@@ -103,10 +109,8 @@
 
     if (withNoise) noise.play();
     (isSquare ? square : circle).draw();
-    await win.flip();
-
-    trialClock.reset();
-    const keys = await core.Keyboard.getKeys({
+    await win.flip();    trialClock.reset();
+    const keys = await psychoJS.eventManager.getKeys({
       maxWait: 2.0,
       keyList: ['z','m','escape'],
       timeStamped: trialClock
@@ -173,10 +177,9 @@
         "Press SPACE to continue.",
       height: 0.05,
       color: new util.Color('white')
-    });
-    testInstr.draw();
+    });    testInstr.draw();
     await win.flip();
-    await core.Keyboard.getKeys({ keyList: ['space'] });
+    await psychoJS.eventManager.getKeys({ keyList: ['space'] });
   }
 
   async function runTesting() {
@@ -190,10 +193,9 @@
   // final thank‐you + save + quit
   psychoJS.schedule(async () => {
     feedback.text  = 'Experiment completed. Thank you!';
-    feedback.color = new util.Color('white');
-    feedback.draw();
+    feedback.color = new util.Color('white');    feedback.draw();
     await win.flip();
-    await core.Keyboard.getKeys({ keyList: ['space'] });
+    await psychoJS.eventManager.getKeys({ keyList: ['space'] });
   });
   psychoJS.schedule(async () => {
     psychoJS.experiment.save({
