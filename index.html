@@ -89,13 +89,11 @@
     await runTraining();
     await showTestingInstructions();
     await runTesting();
-  }
-  async function showInstructions() {
+  }  async function showInstructions() {
     instructions.draw();
     await win.flip();
-    await psychoJS.eventManager.getKeys({ keyList: ['space'] });
+    await util.waitForKeyPress(['space']);
   }
-
   async function runTrial(isSquare, withNoise = false) {
     psychoJS.eventManager.clearEvents();
     fixation.draw();
@@ -104,15 +102,13 @@
 
     if (withNoise) noise.play();
     (isSquare ? square : circle).draw();
-    await win.flip();    trialClock.reset();
-    const keys = await psychoJS.eventManager.getKeys({
-      maxWait: 2.0,
-      keyList: ['z','m','escape'],
-      timeStamped: trialClock
-    });
+    await win.flip();
+
+    trialClock.reset();
+    const keys = await util.waitForKeyPress(['z','m','escape'], 2.0, trialClock);
 
     let correct = false, rt = null;
-    if (keys.length) {
+    if (keys && keys.length) {
       const key = keys[0].key;
       rt = keys[0].rt;
       if (key === 'escape') psychoJS.quit();
@@ -174,7 +170,7 @@
       color: new util.Color('white')
     });    testInstr.draw();
     await win.flip();
-    await psychoJS.eventManager.getKeys({ keyList: ['space'] });
+    await util.waitForKeyPress(['space']);
   }
 
   async function runTesting() {
@@ -190,7 +186,7 @@
     feedback.text  = 'Experiment completed. Thank you!';
     feedback.color = new util.Color('white');    feedback.draw();
     await win.flip();
-    await psychoJS.eventManager.getKeys({ keyList: ['space'] });
+    await util.waitForKeyPress(['space']);
   });
   psychoJS.schedule(async () => {
     psychoJS.experiment.save({
