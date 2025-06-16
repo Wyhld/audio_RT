@@ -1,4 +1,4 @@
-// PsychoJS Categorization Task
+1// PsychoJS Categorization Task
 // JavaScript implementation for Pavlovia
 
 // Remove import statement and use global PsychoJS object
