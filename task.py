@@ -162,6 +162,50 @@ while training_accuracy < 0.7:
     core.wait(3.0)
     training_accuracy, training_data = run_block(10, phase='training')
 
+# ============================
+# 6. VOLUME ADJUSTMENT SCREEN
+# ============================
+# Volume adjustment screen after training phase and before testing phase
+volume_slider = visual.Slider(
+    win=win,
+    ticks=(0, 0.25, 0.5, 0.75, 1.0),
+    labels=['0%', '25%', '50%', '75%', '100%'],
+    granularity=0.01,
+    style='rating',
+    size=(1.0, 0.1),
+    pos=(0, -0.2),
+    color='white'
+)
+
+volume_text = visual.TextStim(
+    win=win,
+    text="Adjust the noise volume using the slider below.\nPress 'P' to play the noise and SPACE to confirm.",
+    height=0.05,
+    color='white',
+    pos=(0, 0.2)
+)
+
+# Show the volume adjustment screen
+while True:
+    volume_text.draw()
+    volume_slider.draw()
+    win.flip()
+
+    keys = event.getKeys(keyList=['p', 'space'])
+    if 'p' in keys and noise is not None:
+        noise_volume = volume_slider.getRating()
+        if noise_volume is not None:
+            noise.setVolume(noise_volume)
+        noise.play()
+    if 'space' in keys:
+        noise_volume = volume_slider.getRating()
+        if noise_volume is not None:
+            break
+
+# Set the final noise volume
+if noise is not None:
+    noise.setVolume(noise_volume)
+
 testing_instructions = visual.TextStim(
     win=win,
     text="Great job!\n\nNow you will do the same task, but sometimes there will be noise.\n\n"
@@ -175,6 +219,9 @@ event.waitKeys(keyList=['space'])
 
 testing_accuracy, testing_data = run_block(80, phase='testing')
 
+# ============================
+# 7. SAVE DATA
+# ============================
 # Save data
 with open(f"{filename}.csv", 'w') as f:
     f.write('phase,stimulus,correct_key,response,reaction_time,with_noise\n')
@@ -191,3 +238,7 @@ event.waitKeys()
 
 win.close()
 core.quit()
+
+# Set the speaker to the main speaker selected for the device
+from psychopy.sound import backend_sounddevice
+backend_sounddevice.defaultOutputDevice = 'default'  # Use the default output device
