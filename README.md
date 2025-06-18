@@ -13,7 +13,7 @@ This project is designed as a course task to teach students how to create and an
   - `cleaning.R`: R script for preprocessing and analyzing the data.
 - **`data/`**: Directory for storing collected data from the experiments.
   - Example files: `test 1_Categorization_Task_2025-06-16_18_37_26.csv`, etc.
-- **`taks_scripts/`**: Contains the main task implementation and resources.
+- **`task_scripts/`**: Contains the main task implementation and resources.
   - `task.py`: PsychoPy implementation of the categorization task.
   - `task.js`: JavaScript implementation for the web-based version.
   - `index.html`: HTML file for running the web-based experiment.

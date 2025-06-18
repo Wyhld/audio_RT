@@ -27,8 +27,11 @@ if not dlg.OK:
 # Replace invalid characters in the filename for Windows compatibility
 exp_info['date'] = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-# Create a valid filename
-filename = os.path.join('data', f"{exp_info['participant']}_{exp_name}_{exp_info['date']}")
+# Create a valid filename relative to the audio_RT directory
+filename = os.path.join(os.path.dirname(__file__), '..', 'data', f"{exp_info['participant']}_{exp_name}_{exp_info['date']}")
+
+# Correct the path to be relative to the audio_RT directory
+filename = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data', f"{exp_info['participant']}_{exp_name}_{exp_info['date']}"))
 
 # ============================
 # 2. WINDOW SETUP
