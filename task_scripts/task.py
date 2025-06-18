@@ -184,7 +184,7 @@ volume_slider = visual.Slider(
 
 volume_text = visual.TextStim(
     win=win,
-    text="Adjust the noise volume using the slider below.\nPress 'P' to play the noise and SPACE to confirm.",
+    text="Adjust the noise volume using the slider below.\nPress 'P' to play the noise and SPACE to confirm.\nThe volume should be bothersome but not hurthful.",
     height=0.05,
     color='white',
     pos=(0, 0.2)
