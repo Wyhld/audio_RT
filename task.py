@@ -20,12 +20,10 @@ dlg = gui.DlgFromDict(dictionary=exp_info, title=exp_name)
 if not dlg.OK:
     core.quit()
 
-exp_info['date'] = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+# Replace invalid characters in the filename for Windows compatibility
+exp_info['date'] = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-# Create data directory
-if not os.path.exists('data'):
-    os.makedirs('data')
-
+# Create a valid filename
 filename = os.path.join('data', f"{exp_info['participant']}_{exp_name}_{exp_info['date']}")
 
 # ============================
