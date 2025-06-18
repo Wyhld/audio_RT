@@ -7,6 +7,10 @@ from datetime import datetime
 import numpy as np  # For noise generation
 from scipy.io.wavfile import write  # For saving white noise
 
+# Set the speaker to the main speaker selected for the device
+from psychopy.sound import backend_sounddevice
+backend_sounddevice.defaultOutputDevice = 'default'  # Use the default output device
+
 # ============================
 # 1. EXPERIMENT SETTINGS
 # ============================
@@ -236,7 +240,3 @@ event.waitKeys()
 
 win.close()
 core.quit()
-
-# Set the speaker to the main speaker selected for the device
-from psychopy.sound import backend_sounddevice
-backend_sounddevice.defaultOutputDevice = 'default'  # Use the default output device

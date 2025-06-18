@@ -1,20 +1,25 @@
 # Categorization Task with Reaction Times
 
 ## Project Overview
-This project aims to create an experimental task that measures reaction times during categorization tasks. Participants are presented with specific clues and images, and their reaction times are recorded. Additionally, the experiment investigates the impact of noise interference on reaction times.
+This project is designed as a course task to teach students how to create and analyze experiments using PsychoPy. The task involves measuring reaction times during categorization tasks, with an additional focus on the impact of noise interference. The project also includes a web-based implementation for online data collection.
 
 ## Objectives
 1. **Primary Objective**: Measure reaction times during categorization tasks and analyze the effect of noise interference.
-2. **Secondary Objective**: Replicate the functionality of the PsychoPy `.py` file in JavaScript to enable online data collection via Pavlovia.
+2. **Optional Goal**: Provide a web-based implementation using JavaScript to enable online data collection via Pavlovia.
+3. **Educational Goal**: Teach students how to design, implement, and analyze psychological experiments.
 
 ## Project Structure
-- **audio_RT/**
-  - `index.html`: The main HTML file for the web-based experiment.
-  - `task.js`: JavaScript implementation of the categorization task.
+- **`analysis_script/`**: Contains scripts for cleaning and analyzing the collected data.
+  - `cleaning.R`: R script for preprocessing and analyzing the data.
+- **`data/`**: Directory for storing collected data from the experiments.
+  - Example files: `test 1_Categorization_Task_2025-06-16_18_37_26.csv`, etc.
+- **`taks_scripts/`**: Contains the main task implementation and resources.
   - `task.py`: PsychoPy implementation of the categorization task.
+  - `task.js`: JavaScript implementation for the web-based version.
+  - `index.html`: HTML file for running the web-based experiment.
   - `white_noise.wav`: Audio file used for noise interference.
-  - `data/`: Directory for storing collected data.
-  - `course-task/`: Additional resources or tasks related to the experiment.
+- **`audio_RT.Rproj`**: R project file for organizing the analysis workflow.
+- **`README.md`**: Documentation for the project.
 
 ## How to Run
 ### PsychoPy Version
@@ -42,6 +47,12 @@ This project aims to create an experimental task that measures reaction times du
 - Enhance the web-based version to include noise generation.
 - Optimize timing precision in the browser.
 - Add participant information dialog for the web-based version.
+
+## Educational Context
+This project is part of a course on experimental psychology and programming. It provides students with practical experience in:
+- Designing experiments using PsychoPy.
+- Implementing tasks in Python and JavaScript.
+- Analyzing experimental data using R.
 
 ## Contact
 For questions or collaboration, please contact [Your Name] at [Your Email].
