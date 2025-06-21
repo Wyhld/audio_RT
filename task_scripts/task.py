@@ -70,17 +70,17 @@ feedback = visual.TextStim(
 square = visual.Rect(win, width=0.2, height=0.2, fillColor='white', lineColor='white')
 circle = visual.Circle(win, radius=0.1, fillColor='white', lineColor='white')
 
-# === Generate white noise and save as WAV ===
-white_noise_array = np.random.uniform(-1, 1, int(44100 * 0.5))  # 0.5 seconds
-white_noise_pcm = (white_noise_array * 32767).astype(np.int16)  # Convert to 16-bit PCM
-noise_path = "white_noise.wav"
-write(noise_path, 44100, white_noise_pcm)
-
-# === Load the white noise using PsychoPy's sound module ===
+# === Ensure white noise file exists ===
+noise_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'white_noise.wav'))
+if not os.path.isfile(noise_path):
+    # generate 0.5s white noise and save
+    white_noise_array = np.random.uniform(-1, 1, int(44100 * 0.5))
+    white_noise_pcm = (white_noise_array * 32767).astype(np.int16)
+    write(noise_path, 44100, white_noise_pcm)
 try:
     noise = sound.Sound(noise_path)
 except Exception as e:
-    print(f"WARNING: Failed to load white noise sound: {e}")
+    print(f"WARNING: Failed to load or create white noise sound: {e}")
     noise = None
 
 # Fixation cross
