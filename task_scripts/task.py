@@ -44,6 +44,34 @@ win = visual.Window(
 )
 
 # ============================
+# 2. INFORMED CONSENT
+# ============================
+# Create the instructions text for informed consent
+informed_consent = visual.TextStim(
+    win=win,
+    text="Visual Categorization under Auditory Disruption\n\n"
+        "Researchers: Cristobal Castillo, Martín Montesinos, Antonia Olguí\n"
+            "Purpose of the study: This study aims to examine how an unexpected sound affects response time during a simple visual categorization task.\n"
+            "What You Will Do: You will see shapes (circles or squares) on the screen and respond by pressing a key. Sometimes, you may hear a brief noise during the task. Your reaction time and accuracy will be recorded.\n"
+            "Duration: The experiment will take approximately 10-15 minutes.\n"
+            "Voluntary Participation: Your participation is entirely voluntary. You may withdraw at any time without penalty or explanation.\n"
+            "Confidentiality: Your responses will be kept confidential and used only for research purposes.\n"
+            "Risks and Benefits: There are no known risks associated with this task. Some sounds may be sudden, but not loud or harmful. Your participation will help us better understand how attention works.\n"
+            "Contact Information: If you have any questions or concerns, please contact the researchers at [aolgui@alumnos.uai.cl].\n"
+            "By pressing ENTER, you agree to participate in this study.\n\n"
+            "Press ENTER to continue.",  
+    height=0.03,  # Text size           
+    color='white',  # Text color
+    wrapWidth=1.2  # Wrap text to fit the window
+)   
+# Show the informed consent text and wait for the participant to agree
+informed_consent.draw()
+win.flip()
+event.waitKeys(keyList=['return'])
+
+
+
+# ============================
 # 3. STIMULI
 # ============================
 # Instructions
