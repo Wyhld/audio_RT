@@ -44,7 +44,7 @@ win = visual.Window(
 )
 
 # ============================
-# 2. INFORMED CONSENT
+# 3. INFORMED CONSENT
 # ============================
 # Create the instructions text for informed consent
 informed_consent = visual.TextStim(
@@ -72,7 +72,7 @@ event.waitKeys(keyList=['return'])
 
 
 # ============================
-# 3. STIMULI
+# 4. STIMULI
 # ============================
 # Instructions
 instructions = visual.TextStim(
@@ -115,7 +115,7 @@ except Exception as e:
 fixation = visual.TextStim(win, text='+', height=0.1, color='white')
 
 # ============================
-# 4. FUNCTIONS
+# 5. FUNCTIONS
 # ============================
 def run_trial(stimulus, correct_key, with_noise=False):
     """Run a single trial."""
@@ -180,7 +180,7 @@ def run_block(n_trials, phase='training'):
     return correct_responses / n_trials, trials
 
 # ============================
-# 5. EXPERIMENT FLOW
+# 6. EXPERIMENT FLOW
 # ============================
 instructions.draw()
 win.flip()
@@ -196,7 +196,7 @@ while training_accuracy < 0.7:
     training_accuracy, training_data = run_block(10, phase='training')
 
 # ============================
-# 6. VOLUME ADJUSTMENT SCREEN
+# 7. VOLUME ADJUSTMENT SCREEN
 # ============================
 # Volume adjustment screen after training phase and before testing phase
 volume_slider = visual.Slider(
@@ -253,7 +253,7 @@ event.waitKeys(keyList=['space'])
 testing_accuracy, testing_data = run_block(80, phase='testing')
 
 # ============================
-# 7. SAVE DATA
+# 8. SAVE DATA
 # ============================
 # Save data
 with open(f"{filename}.csv", 'w') as f:
