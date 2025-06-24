@@ -1,15 +1,12 @@
 # PsychoPy Categorization Task
 # -----------------------------------------
-from psychopy import visual, core, data, event, gui, sound
+import sounddevice as sd
+from psychopy import visual, core, data, event, gui
 import os
 import random
 from datetime import datetime
 import numpy as np  # For noise generation
-from scipy.io.wavfile import write  # For saving white noise
-
-# Set the speaker to the main speaker selected for the device
-from psychopy.sound import backend_sounddevice
-backend_sounddevice.defaultOutputDevice = 'default'  # Use the default output device
+from scipy.io.wavfile import write, read as wavread  # For saving and reading white noise
 
 # ============================
 # 1. EXPERIMENT SETTINGS
@@ -18,14 +15,36 @@ exp_name = 'Categorization_Task'
 exp_info = {
     'participant': '',
     'session': '001',
+    'gender': '',
+    'age': '',
 }
 
 dlg = gui.DlgFromDict(dictionary=exp_info, title=exp_name)
 if not dlg.OK:
     core.quit()
 
+# ============================
+# Select audio output device
+# ============================
+from psychopy import prefs
+prefs.hardware['audioLib'] = ['sounddevice']
+selected_device = None
+print("Available audio output devices:")
+output_devices = []
+for idx, dev in enumerate(sd.query_devices()):
+    if dev['max_output_channels'] > 0:
+        output_devices.append((idx, dev['name']))
+        print(f"{idx}: {dev['name']}")
+selection = input("Enter device index to use (or leave blank for default): ")
+try:
+    sel = int(selection)
+    selected_device = sel
+    print(f"Using audio device {sel}: {sd.query_devices()[sel]['name']}")
+except:
+    print("No valid selection; using system default audio device.")
+
 # Replace invalid characters in the filename for Windows compatibility
-exp_info['date'] = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+exp_info['date'] = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
 # Create a valid filename relative to the audio_RT directory
 filename = os.path.join(os.path.dirname(__file__), '..', 'data', f"{exp_info['participant']}_{exp_name}_{exp_info['date']}")
@@ -105,11 +124,8 @@ if not os.path.isfile(noise_path):
     white_noise_array = np.random.uniform(-1, 1, int(44100 * 0.5))
     white_noise_pcm = (white_noise_array * 32767).astype(np.int16)
     write(noise_path, 44100, white_noise_pcm)
-try:
-    noise = sound.Sound(noise_path)
-except Exception as e:
-    print(f"WARNING: Failed to load or create white noise sound: {e}")
-    noise = None
+noise_sr, noise_array = wavread(noise_path)
+noise_array = noise_array.astype(np.float32) / np.iinfo(noise_array.dtype).max  # normalize
 
 # Fixation cross
 fixation = visual.TextStim(win, text='+', height=0.1, color='white')
@@ -125,8 +141,8 @@ def run_trial(stimulus, correct_key, with_noise=False):
     win.flip()
     core.wait(0.5)
 
-    if with_noise and noise is not None:
-        noise.play()
+    if with_noise and selected_device is not None:
+        sd.play(noise_array * noise_volume, samplerate=noise_sr, device=selected_device)
     stimulus.draw()
     win.flip()
 
@@ -212,7 +228,7 @@ volume_slider = visual.Slider(
 
 volume_text = visual.TextStim(
     win=win,
-    text="Adjust the noise volume using the slider below.\nPress 'P' to play the noise and SPACE to confirm.\nThe volume should be bothersome but not hurthful.",
+    text="Adjust the noise volume using the slider below.\nPress 'P' to play the noise and SPACE to confirm.\nThe volume should be bothersome but not hurtful.",
     height=0.05,
     color='white',
     pos=(0, 0.2)
@@ -225,19 +241,14 @@ while True:
     win.flip()
 
     keys = event.getKeys(keyList=['p', 'space'])
-    if 'p' in keys and noise is not None:
+    if 'p' in keys:
         noise_volume = volume_slider.getRating()
         if noise_volume is not None:
-            noise.setVolume(noise_volume)
-        noise.play()
+            sd.play(noise_array * noise_volume, samplerate=noise_sr, device=selected_device)
     if 'space' in keys:
         noise_volume = volume_slider.getRating()
         if noise_volume is not None:
             break
-
-# Set the final noise volume
-if noise is not None:
-    noise.setVolume(noise_volume)
 
 testing_instructions = visual.TextStim(
     win=win,
