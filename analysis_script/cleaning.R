@@ -16,9 +16,17 @@ library(tidyverse)
 folder_path <- "data/"
 
 # Read and combine all CSVs
-data <- list.files(path = folder_path, pattern = "\\.csv$", full.names = TRUE) %>%
+data <- list.files(path = folder_path,
+                   pattern    = "\\.csv$",
+                   full.names = TRUE) %>%
   set_names(~ tools::file_path_sans_ext(basename(.))) %>%
-  map_dfr(read_csv, .id = "source_file")
+  map_dfr(read_csv,
+          .id      = "source_file",
+          # force reaction_time to double:
+          col_types = cols(
+            reaction_time = col_double(),
+            .default      = col_guess()
+          ))
 
 data <- data %>%
   rename(id = source_file) 
@@ -27,52 +35,33 @@ data <- data %>%
 data <- data %>%
   # Filter only the testing phase
   filter(phase != "training") %>%
-  drop_na()
+  drop_na(reaction_time)
 
 # Log transformation
 data$normaliced_rt = log(data$reaction_time)
 boxplot(data$normaliced_rt)
 
-clean_data <- data %>%
-  # (Optional) Hard bounds on raw RTs, e.g. exclude implausible values
-  filter(reaction_time >= 0.100, reaction_time <= 3.000) %>%  
-  group_by(id) %>%    # replace 'subject' with your ID column
+# 3. Clean & prepare --------------------------------------------------
+data_clean <- data %>%
+  # 3a) drop impossible RTs and any NAs
+  filter(!is.na(reaction_time),
+         reaction_time > 0.1,
+         reaction_time < 3.0) %>%
+  # 3b) ensure your subject ID and predictor are factors
   mutate(
-    med_log    = median(normaliced_rt, na.rm = TRUE),
-    mad_log    = mad(normaliced_rt, na.rm = TRUE),
-    is_outlier = abs(normaliced_rt - med_log) > 3 * mad_log
-  ) %>%
-  filter(!is_outlier) %>%  # drop the extreme log-RTs
-  ungroup() %>%
-  # back-transform so your cleaned RTs are on the original scale
-  mutate(reaction_time_clean = exp(normaliced_rt)) %>%
-  select(-med_log, -mad_log, -is_outlier)
-
-# View a quick summary
-clean_data %>% 
-  summarise(
-    n_orig = nrow(data),
-    n_clean = nrow(.),
-    pct_removed = 100 * (n_orig - n_clean) / n_orig
+    id         = factor(id),
+    with_noise = factor(with_noise, levels = c(FALSE, TRUE))
   )
 
-clean_data <- data %>%
-  # (Optional) Hard bounds on raw RTs, e.g. exclude implausible values
-  filter(reaction_time >= 0.100, reaction_time <= 3.000) %>%  
-  group_by(id) %>%    # replace 'subject' with your ID column
-  mutate(
-    med_log    = median(normaliced_rt, na.rm = TRUE),
-    mad_log    = mad(normaliced_rt, na.rm = TRUE),
-    is_outlier = abs(normaliced_rt - med_log) > 3 * mad_log
-  ) %>%
-  filter(!is_outlier) %>%  # drop the extreme log-RTs
+# 4. Outlier removal via log–MAD --------------------------------------
+data_trim <- data_clean %>%
+  mutate(logRT = log(reaction_time)) %>%
+  group_by(id) %>%
+  filter(abs(logRT - median(logRT)) <= 3 * mad(logRT)) %>%
   ungroup() %>%
-  # back-transform so your cleaned RTs are on the original scale
-  mutate(reaction_time_clean = exp(normaliced_rt)) %>%
-  select(-med_log, -mad_log, -is_outlier)
-
+  select(-logRT)
 data$with_noise <- factor(data$with_noise)
 
-hist(clean_data$reaction_time)
-hist(clean_data$normaliced_rt)
-write_csv(clean_data, "data.csv")
+hist(data_trim$reaction_time)
+hist(data_trim$normaliced_rt)
+write_csv(data_trim, "data.csv")
