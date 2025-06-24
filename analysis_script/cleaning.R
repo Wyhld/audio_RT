@@ -24,15 +24,15 @@ data <- data %>%
   rename(id = source_file)
 
 # Cleaning
-data_clean <- data %>%
+clean_data <- data %>%
   # Replace long names like "test 1_Categorization_Task_..." with "test_1"
-  mutate(source_file = str_extract(id, "test\\s?\\d+") %>%
+  mutate(id = str_extract(id, "test\\s?\\d+") %>%
            str_replace(" ", "_")) %>%
   
   # Filter only the testing phase
   filter(phase != "training")
 
-data_clean$normaliced_rt = log(data_clean$reaction_time)
+clean_data$normaliced_rt = log(clean_data$reaction_time)
 
-hist(data_clean$reaction_time)
-hist(data_clean$normaliced_rt)
+hist(clean_data$reaction_time)
+hist(clean_data$normaliced_rt)
